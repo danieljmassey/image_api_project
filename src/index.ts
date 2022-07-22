@@ -1,5 +1,7 @@
 import express from 'express'
+
 import routes from './routes/api/index'
+
 const app = express()
 const port = 3000
 
