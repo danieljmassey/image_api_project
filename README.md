@@ -5,8 +5,8 @@ Repository for image processing API project
 ## To-Do
 
 - Separation of concerns
-  - Parsing of input
-  - Validation of query string
+  - Parsing of input -- finished
+  - Validation of query string -- finished
   - Image Processing block
 
 - Unit Tests

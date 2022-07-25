@@ -2,12 +2,10 @@ import express from 'express'
 import fs from 'fs'
 import path from 'path'
 import sharp from 'sharp'
+import parseInput from '../../lib/parseInput'
+import validator from '../../lib/validateQuery'
 
 const route = express.Router()
-
-const isInvalidDimension = (input: any): boolean => {
-  return isNaN(input) || input < 0
-}
 
 const resizeImage = async (currentPath: string, width: number, height: number, target: string): Promise<Buffer> => {
   const resizedImage = sharp(currentPath).resize(width, height)
@@ -17,35 +15,22 @@ const resizeImage = async (currentPath: string, width: number, height: number, t
 
 route.get('/', async (req, res) => {
   // pull image parameters from query object
-  const fileName = req.query.filename
-  const imageHeight = parseInt(req.query.height as string)
-  const imageWidth = parseInt(req.query.width as string)
-  const filePath = path.resolve(`./././assets/full/${fileName}.jpeg`)
-  const thumbPath = path.resolve(`./././assets/thumb/${fileName}-${imageHeight}x${imageWidth}.jpg`)
+  const parsedQuery = parseInput(req.query)
+  const validQuery = validator(parsedQuery)
 
-  // validation for query string inputs
-  if (isInvalidDimension(imageHeight)) {
-    res.status(400).send('Invalid dimension entered for height')
-    return null
-  }
-  if (isInvalidDimension(imageWidth)) {
-    res.status(400).send('invalid dimension entered for width')
-    return null
-  }
-  if (!fs.existsSync(filePath)) {
-    res.status(400).send('Invalid filename entered')
-    return null
-  }
+  // create thumbnail filepath out of validated query string
+  validQuery.thumbPath = path.resolve(`./././assets/thumb/${parsedQuery.filename}-${parsedQuery.width}x${parsedQuery.height}`)
 
-  if (fs.existsSync(thumbPath)) {
-    const generatedThumbnail = fs.readFileSync(thumbPath)
+  // Check cache for existing thumbnail, display if extent
+  if (fs.existsSync(validQuery.thumbPath)) {
+    const generatedThumbnail = fs.readFileSync(validQuery.thumbPath)
     res.writeHead(200, { 'Content-Type': 'image/jpeg' })
     res.end(generatedThumbnail)
     return
   }
 
   try {
-    const resizedThumb = await resizeImage(filePath, imageWidth, imageHeight, thumbPath)
+    const resizedThumb = await resizeImage(validQuery.filePath, parsedQuery.width, parsedQuery.height, validQuery.thumbPath)
     res.writeHead(200, { 'Content-Type': 'image/jpeg' })
     res.end(resizedThumb)
   } catch (error) {
