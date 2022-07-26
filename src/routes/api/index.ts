@@ -17,26 +17,28 @@ route.get('/', async (req, res) => {
   // pull image parameters from query object
   const parsedQuery = parseInput(req.query)
   const validQuery = validator(parsedQuery)
+  if (validQuery.status !== 200) {
+    res.status(validQuery.status).send(validQuery.error)
+  } else {
+    // create thumbnail filepath out of validated query string
+    validQuery.thumbPath = path.resolve(`./././assets/thumb/${parsedQuery.filename}-${parsedQuery.width}x${parsedQuery.height}`)
 
-  // create thumbnail filepath out of validated query string
-  validQuery.thumbPath = path.resolve(`./././assets/thumb/${parsedQuery.filename}-${parsedQuery.width}x${parsedQuery.height}`)
+    // Check cache for existing thumbnail, display if extent
+    if (fs.existsSync(validQuery.thumbPath)) {
+      const generatedThumbnail = fs.readFileSync(validQuery.thumbPath)
+      res.status(200).contentType('jpg').send(generatedThumbnail)
+      return
+    }
 
-  // Check cache for existing thumbnail, display if extent
-  if (fs.existsSync(validQuery.thumbPath)) {
-    const generatedThumbnail = fs.readFileSync(validQuery.thumbPath)
-    res.writeHead(200, { 'Content-Type': 'image/jpeg' })
-    res.end(generatedThumbnail)
-    return
+    try {
+      const resizedThumb = await resizeImage(validQuery.filePath, parsedQuery.width, parsedQuery.height, validQuery.thumbPath)
+      res.status(200).contentType('jpg').send(resizedThumb)
+    } catch (error) {
+      console.error(error)
+      res.status(500).send('An error occured during the image processing')
+    }
   }
-
-  try {
-    const resizedThumb = await resizeImage(validQuery.filePath, parsedQuery.width, parsedQuery.height, validQuery.thumbPath)
-    res.writeHead(200, { 'Content-Type': 'image/jpeg' })
-    res.end(resizedThumb)
-  } catch (error) {
-    console.error(error)
-    res.status(500).send('An error occured during the image processing')
-  }
-})
+}
+)
 
 export default route

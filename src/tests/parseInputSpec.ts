@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import parseInput from '../lib/parseInput'
 
 const defaultObject = {
@@ -17,10 +18,11 @@ const invalidObject = {
   hite: 75,
   fylenaem: 'test'
 }
-it ('Should return defaulObject if wrong query parameters', () => {
+
+it('Should return defaulObject if wrong query parameters', () => {
   expect(parseInput(invalidObject)).toEqual(parseInput(defaultObject))
 })
 
-it ('Should modify the modify default object if query is valid', () => {
+it('Should modify the modify default object if query is valid', () => {
   expect(parseInput(validObject)).not.toEqual(parseInput(defaultObject))
 })

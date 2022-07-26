@@ -26,17 +26,16 @@ const validator = (input: Object) => {
         validatedObject.status = 200
         validatedObject.filePath = fileCheck
       }
+    } else if (parseInt(inputArray[i][1]) === 0) {
+      validatedObject.status = 404
+      validatedObject.error = `Invalid Input: ${inputArray[i]} not a valid parameter`
+      return validatedObject
     } else if (targetKey[i] === inputArray[i][0]) {
-      if (inputArray[i][1] === isNaN || inputArray[i][1] < 0) {
+      if (isNaN(inputArray[i][1]) || parseInt(inputArray[i][1]) < 0) {
         validatedObject.status = 400
-        validatedObject.error = `Invalid input: ${inputArray[i]}`
+        validatedObject.error = `Invalid input: ${inputArray[i][0]}: ${inputArray[i][1]}`
         return validatedObject
       }
-      validatedObject.status = 200
-    } else {
-      validatedObject.status = 400
-      validatedObject.error = `Invalid input: "${targetKey[i]}" missing from input field`
-      return validatedObject
     }
   }
   return validatedObject

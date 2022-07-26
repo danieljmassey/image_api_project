@@ -9,11 +9,9 @@ const parseInput = (input: Object) => {
   for (let i = 0; i < (objectArray.length); i++) {
     if (objectArray[i][0].toLowerCase() === 'width') {
       parsedObject.width = parseInt(objectArray[i][1])
-    }
-    if (objectArray[i][0].toLowerCase() === 'height') {
+    } else if (objectArray[i][0].toLowerCase() === 'height') {
       parsedObject.height = parseInt(objectArray[i][1])
-    }
-    if (objectArray[i][0].toLowerCase() === 'filename') {
+    } else if (objectArray[i][0].toLowerCase() === 'filename') {
       parsedObject.filename = objectArray[i][1]
     }
   }
