@@ -1,13 +1,19 @@
-import express from 'express'
+import express, { Request, Response } from 'express'
 import fs from 'fs'
 import path from 'path'
 import resizeImage from '../../lib/imageProcess'
 import parseInput from '../../lib/parseInput'
 import validator from '../../lib/validateQuery'
 
+declare module 'express' {
+    export interface Request {
+        query: any
+    }
+}
+
 const route = express.Router()
 
-route.get('/', async (req, res) => {
+route.get('/', async (req: Request, res: Response): Promise<void> => {
     // pull image parameters from query object
     const parsedQuery = parseInput(req.query)
     const validQuery = validator(parsedQuery)
