@@ -19,10 +19,12 @@ const invalidObject = {
     fylenaem: 'test',
 }
 
-it('Should return defaulObject if wrong query parameters', () => {
-    expect(parseInput(invalidObject)).toEqual(parseInput(defaultObject))
-})
+describe('Input Parsing Test', () => {
+    it('Should return defaulObject if wrong query parameters', () => {
+        expect(parseInput(invalidObject)).toEqual(parseInput(defaultObject))
+    })
 
-it('Should modify the modify default object if query is valid', () => {
-    expect(parseInput(validObject)).not.toEqual(parseInput(defaultObject))
+    it('Should modify the modify default object if query is valid', () => {
+        expect(parseInput(validObject)).not.toEqual(parseInput(defaultObject))
+    })
 })

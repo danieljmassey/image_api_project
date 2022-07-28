@@ -17,6 +17,9 @@ route.get('/', async (req: Request, res: Response): Promise<void> => {
     // pull image parameters from query object
     const parsedQuery = parseInput(req.query)
     const validQuery = validator(parsedQuery)
+    if (!fs.existsSync('./././assets/thumb')) {
+        fs.mkdirSync('./././assets/thumb')
+    }
     if (validQuery.status !== 200) {
         res.status(validQuery.status).send(validQuery.error)
     } else {
